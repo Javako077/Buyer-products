@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professional dashboard for managing buyers, products, and transactions with filtering, sorting, and export features.">
+  <title>Dashboard - Buyers, Products & Transactions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border: #334155;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-hover: 0 10px 25px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dark-mode-toggle {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .dark-mode-toggle:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .section {
+      background: var(--bg-secondary);
+      padding: 30px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 40px;
+      transition: var(--transition);
+      border: 1px solid var(--border);
+    }
+
+    .section:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .section h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+    }
+
+    .section h2 i {
+      color: var(--accent);
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .search-bar, select, input[type="date"] {
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: var(--transition);
+      min-width: 200px;
+    }
+
+    .search-bar::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-bar:focus, select:focus, input[type="date"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .button {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 14px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .button.success {
+      background: linear-gradient(135deg, var(--success), #059669);
+    }
+
+    .button.danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 16px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    th:hover {
+      background: var(--accent-hover);
+    }
+
+    th i {
+      margin-left: 5px;
+      opacity: 0.7;
+    }
+
+    tr {
+      transition: var(--transition);
+    }
+
+    tr:nth-child(even) {
+      background: rgba(59, 130, 246, 0.02);
+    }
+
+    tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: scale(1.01);
+    }
+
+    .stock {
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .yellow { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .red { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status.paid { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .status.pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .top-controls { flex-direction: column; align-items: stretch; }
+      .search-bar, select, input[type="date"] { min-width: auto; }
+      table { font-size: 14px; }
+      th, td { padding: 12px 8px; }
+      .header { flex-direction: column; gap: 15px; text-align: center; }
+      .title { font-size: 2rem; }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      background: var(--success);
+      color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow-hover);
+      transform: translateX(400px);
+      transition: var(--transition);
+      z-index: 1000;
+      font-weight: 500;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.danger {
+      background: var(--danger);
+    }
+
+    /* Action buttons in table */
+    .button.small {
+      padding: 6px 10px;
+      font-size: 12px;
+      min-width: auto;
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <div class="container">
+    <div class="header">
+      <h1 class="title"><i class="fas fa-chart-dashboard"></i> Dashboard</h1>
+      <button class="dark-mode-toggle" onclick="toggleMode()" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="modeIcon"></i>Mode
+      </button>
+    </div>
+
+    <!-- Buyers Section -->
+    <div class="section" id="buyersSection">
+      <h2><i class="fas fa-users"></i> Buyers Details</h2>
+      <div class="top-controls">
+        <input type="text" id="buyerSearch" class="search-bar" placeholder="Search by name, email, or phone..." oninput="filterBuyers()">
+        <select id="buyerFilter" onchange="sortBuyers()">
+          <option value="">Sort By</option>
+          <option value="name">Name (A-Z)</option>
+          <option value="date">Registration Date (Newest)</option>
+        </select>
+        <!-- <button class="button success" onclick="addBuyer()"><i class="fas fa-plus"></i> Add Buyer</button> -->
+      </div>
+      <table id="buyersTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable('buyersTable', 0)">Name <i class="fas fa-sort"></i></th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th onclick="sortTable('buyersTable', 3)">Address <i class="fas fa-sort"></i></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Jyoti Pandey</td><td>Jyoti@gmail.com</td><td>9876543210</td><td>Delhi, India</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Avik Pandey</td><td>avik@gmail.com</td><td>8765432109</td><td>Mumbai, India</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Archita Pandey</td><td>ashu@gmail.com</td><td>7654321098</td><td>Chennai, India</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Prakher Singh</td><td>prakher@gmail.com</td><td>6543210987</td><td>Bengaluru, India</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Products Section -->
+    <div class="section" id="productsSection">
+      <h2><i class="fas fa-boxes"></i> Products Details</h2>
+      <div class="top-controls">
+        <input type="text" id="productSearch" class="search-bar" placeholder="Search by name or category..." oninput="filterProducts()">
+        <select id="stockFilter" onchange="filterProducts()">
+          <option value="">All Stocks</option>
+          <option value="in-stock">In Stock</option>
+          <option value="low-stock">Low Stock</option>
+          <option value="out-stock">Out of Stock</option>
+        </select>
+        <!-- <button class="button success" onclick="addProduct()"><i class="fas fa-plus"></i> Add Product</button> -->
+      </div>
+      <table id="productsTable">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ear buds</td><td>electronic device</td><td>₹250</td><td class="stock green">Sufficient (50+)</td><td>Noise free.</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Toy</td><td>toy</td><td>₹150</td><td class="stock yellow">Low (10)</td><td>eco-friendly toys.</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Phone</td><td>electronic device</td><td>₹50</td><td class="stock red">Out (0)</td><td>Storage,camera,etc.</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>Sugar</td><td>Food</td><td>₹200</td><td class="stock green">Sufficient (30)</td><td>sugar free.</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Transactions Section -->
+    <div class="section" id="transactionsSection">
+      <h2><i class="fas fa-exchange-alt"></i> Transaction Details</h2>
+      <div class="top-controls">
+        <input type="text" id="transactionSearch" class="search-bar" placeholder="Search by ID, buyer, or product..." oninput="filterTransactions()">
+        <input type="date" id="fromDate" onchange="filterTransactions()">
+        <input type="date" id="toDate" onchange="filterTransactions()">
+        <button class="button" onclick="exportTable('transactionsTable')"><i class="fas fa-download"></i> Export CSV</button>
+        <!-- <button class="button success" onclick="addTransaction()"><i class="fas fa-plus"></i> Add Transaction</button> -->
+      </div>
+      <table id="transactionsTable">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Buyer</th>
+            <th>Product</th>
+            <th onclick="sortTable('transactionsTable', 3)">Date <i class="fas fa-sort"></i></th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>T001</td><td>Jyoti Pandey</td><td>Ear buds</td><td>2024-10-05</td><td>2</td><td>₹500</td><td class="status paid">Paid</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>T002</td><td>Avik Pandey</td><td>Toys</td><td>2024-10-04</td><td>1</td><td>₹150</td><td class="status pending">Pending</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          <tr><td>T003</td><td>Archita Pandey</td><td>Phone</td><td>2024-09-30</td><td>3</td><td>₹150</td><td class="status paid">Paid</td><td><button class="button danger small" onclick="deleteRow(this)"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+          </table>
+          </div>
+          </div>
+        </body>
+        <script>
+  // Toggle Dark/Light Mode
+  function toggleMode() {
+    const body = document.body;
+    const icon = document.getElementById("modeIcon");
+    const isDark = body.getAttribute("data-theme") === "dark";
+
+    body.setAttribute("data-theme", isDark ? "light" : "dark");
+    icon.classList.toggle("fa-sun", isDark);
+    icon.classList.toggle("fa-moon", !isDark);
+    showToast(isDark ? "Light Mode Activated" : "Dark Mode Activated");
+  }
+
+  //  Filter Buyers
+  function filterBuyers() {
+    const search = document.getElementById("buyerSearch").value.toLowerCase();
+    const rows = document.querySelectorAll("#buyersTable tbody tr");
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(search) ? "" : "none";
+    });
+  }
+
+  //  Sort Buyers (by name or date)
+  function sortBuyers() {
+    const filter = document.getElementById("buyerFilter").value;
+    const table = document.getElementById("buyersTable");
+    const rows = Array.from(table.rows).slice(1);
+
+    if (filter === "name") {
+      rows.sort((a, b) => a.cells[0].textContent.localeCompare(b.cells[0].textContent));
+    } else if (filter === "date") {
+      rows.reverse(); // simulate recent first
+    }
+
+    const tbody = table.tBodies[0];
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  // 🧾 Filter Products
+  function filterProducts() {
+    const search = document.getElementById("productSearch").value.toLowerCase();
+    const stockFilter = document.getElementById("stockFilter").value;
+    const rows = document.querySelectorAll("#productsTable tbody tr");
+
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const stock = row.querySelector(".stock");
+      let stockMatch = true;
+
+      if (stockFilter === "in-stock") stockMatch = stock.classList.contains("green");
+      else if (stockFilter === "low-stock") stockMatch = stock.classList.contains("yellow");
+      else if (stockFilter === "out-stock") stockMatch = stock.classList.contains("red");
+
+      row.style.display = text.includes(search) && stockMatch ? "" : "none";
+    });
+  }
+
+  // 💰 Filter Transactions
+  function filterTransactions() {
+    const search = document.getElementById("transactionSearch").value.toLowerCase();
+    const fromDate = new Date(document.getElementById("fromDate").value);
+    const toDate = new Date(document.getElementById("toDate").value);
+    const rows = document.querySelectorAll("#transactionsTable tbody tr");
+
+    rows.forEach(row => {
+      const textMatch = row.textContent.toLowerCase().includes(search);
+      const date = new Date(row.cells[3].textContent);
+      const dateMatch =
+        (!document.getElementById("fromDate").value || date >= fromDate) &&
+        (!document.getElementById("toDate").value || date <= toDate);
+      row.style.display = textMatch && dateMatch ? "" : "none";
+    });
+  }
+
+  // ⬆️ Sort Table Columns
+  function sortTable(tableId, colIndex) {
+    const table = document.getElementById(tableId);
+    const rows = Array.from(table.tBodies[0].rows);
+    const asc = table.getAttribute("data-sort") !== "asc";
+
+    rows.sort((a, b) =>
+      a.cells[colIndex].textContent.localeCompare(b.cells[colIndex].textContent, "en", { numeric: true })
+    );
+
+    if (!asc) rows.reverse();
+
+    table.tBodies[0].append(...rows);
+    table.setAttribute("data-sort", asc ? "asc" : "desc");
+  }
+
+  // ➕ Add Buyer / Product / Transaction (Demo Purpose)
+  function addBuyer() {
+    const table = document.getElementById("buyersTable").tBodies[0];
+    const row = table.insertRow();
+    row.innerHTML = `<td>New Buyer</td><td>new@example.com</td><td>9000000000</td><td>New City</td>
+                     <td><button class="button danger small" onclick="deleteRow(this)">
+                     <i class='fas fa-trash'></i></button></td>`;
+    showToast("New Buyer Added");
+  }
+
+  function addProduct() {
+    const table = document.getElementById("productsTable").tBodies[0];
+    const row = table.insertRow();
+    row.innerHTML = `<td>New Product</td><td>Category</td><td>₹100</td>
+                     <td class='stock green'>Sufficient</td><td>New Description</td>
+                     <td><button class="button danger small" onclick="deleteRow(this)">
+                     <i class='fas fa-trash'></i></button></td>`;
+    showToast("New Product Added");
+  }
+
+  function addTransaction() {
+    const table = document.getElementById("transactionsTable").tBodies[0];
+    const row = table.insertRow();
+    row.innerHTML = `<td>T00${table.rows.length + 1}</td><td>Buyer</td><td>Product</td>
+                     <td>${new Date().toISOString().split('T')[0]}</td><td>1</td><td>₹100</td>
+                     <td class='status paid'>Paid</td>
+                     <td><button class="button danger small" onclick="deleteRow(this)">
+                     <i class='fas fa-trash'></i></button></td>`;
+    showToast("New Transaction Added");
+  }
+
+  //  Delete Row
+  function deleteRow(btn) {
+    const row = btn.closest("tr");
+    row.remove();
+    showToast("Record Deleted", "danger");
+  }
+
+  //  Export Table to CSV
+  function exportTable(tableId) {
+    const table = document.getElementById(tableId);
+    let csv = "";
+    for (let row of table.rows) {
+      const cols = Array.from(row.cells).map(col => `"${col.textContent}"`);
+      csv += cols.join(",") + "\n";
+    }
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${tableId}.csv`;
+    a.click();
+    showToast("Exported Successfully");
+  }
+
+  //  Toast Notification
+  function showToast(message, type = "success") {
+    let toast = document.querySelector(".toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.className = "toast";
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.className = `toast show ${type === "danger" ? "danger" : ""}`;
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2500);
+  }
+</script>
+
+        </html>
